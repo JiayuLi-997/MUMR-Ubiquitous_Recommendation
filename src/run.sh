@@ -1,0 +1,15 @@
+# No context
+## GBRT/c
+python traditional_models.py --data_pth ../data/field_study/ --split_pth ../data/split/ --use_wrist 0 --save_pth ./results/ --checkpoint True --log_file ./checkpoints/GBRT/nocontext_best.log --save_annotation nocontext_best --model GBRT --train_type CV --rating_level 3
+## WD/c
+python main.py --data_pth ../data/field_study/ --split_pth ../data/split/ --wrist_suf norm --env_suf norm --env_list weather,GPS --model WideDeep --train_type CV --rating_level 3 --true_m1 False --true_m2 False --um_only True --save_pth ./results/ --checkpoint True --cp_pth ./checkpoints/WideDeep --save_annotation nocontext_best --result_anno default --batch_size 16 --lr 0.001 --l2 0.0001 --lifelog_l2 0 --patience 20 --alpha 0 --beta 0 --embed_dim 16 --hidden_dim 16 --log_file ./checkpoints/WideDeep/nocontext_best.log
+## MUMR/c
+python main.py --data_pth ../data/field_study --split_pth ../data/split/ --wrist_suf norm --env_suf norm --env_list weather,GPS --model MUMR --train_type CV --rating_level 3 --true_m1 False --true_m2 False --um_only True --save_pth ./results/ --checkpoint True --cp_pth ./checkpoints/MUMR --save_annotation 04-01-21alpha_beta --result_anno user,music --act_window_size 30 --lr 0.005 --l2 0.001 --batch_size 16 --alpha 0.05 --beta 0.1 --patience 20 --embed_dim 16 --hidden_dim 64 --log_file ./checkpoints/MUMR/nocontext_best.log
+
+# With context
+## GBRT
+python traditional_models.py --data_pth ../data/field_study/ --split_pth ../data/split/ --use_wrist 1 --save_pth ./results/ --checkpoint True --log_file ./checkpoints/GBRT/nocontext_best.log --save_annotation nocontext_best --model GBRT --train_type CV --rating_level 3 --wrist_suf norm --env_suf norm
+## WD
+python main.py --data_pth ../data/field_study/ --split_pth ../data/split/ --wrist_suf norm --env_suf norm --env_list weather,GPS --model WideDeep --train_type CV --rating_level 3 --true_m1 False --true_m2 False --um_only False --save_pth ./results/ --checkpoint True --cp_pth ./checkpoints/WideDeep --save_annotation best_WD --result_anno wd_best --batch_size 32 --lr 0.005 --l2 0.0001 --lifelog_l2 0.2 --patience 20 --alpha 0 --beta 0 --embed_dim 64 --hidden_dim 16 --act_window_size 20 --log_file ./checkpoints/WideDeep/best.log
+## MUMR
+python main.py --data_pth ../data/field_study/ --split_pth ../data/split/ --wrist_suf norm --env_suf norm --env_list weather,GPS --model MUMR --train_type CV --rating_level 3 --true_m1 False --true_m2 False --um_only False --save_pth ./results/ --checkpoint True --cp_pth ./checkpoints/MUMR --save_annotation 04-01-22alpha_beta --result_anno user,music,context --act_window_size 30 --lr 0.01 --l2 0.02 --lifelog_l2 0.1 --patience 20 --alpha 0.1 --beta 0.1 --embed_dim 16 --hidden_dim 128 --gpu 0 --a_hdim 16 --t_hdim 1 --e_hdim 4 --bio_window_size 20 --kernel_size 9 --stride 7 --log_file ./checkpoints/MUMR/best.log

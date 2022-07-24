@@ -70,7 +70,7 @@ def add_argument(parser):
 	parser.add_argument("--data_pth",type=str,default="../Features_add4/DictData")
 	parser.add_argument("--split_pth",type=str,default="../Features_add4/split/")
 	parser.add_argument("--wrist_suf",type=str,default="",help="Wrist suffix for filename.")
-	parser.add_argument("--lifelog_suf",type=str,default="",help="Lifelog suffix for filename.")
+	parser.add_argument("--env_suf",type=str,default="",help="Lifelog suffix for filename.")
 	parser.add_argument("--env_list",type=str,default="weather,GPS")
 	
 	# Goal Selection
@@ -293,7 +293,7 @@ def get_mainargs(args):
 	for k in arg_dict:
 		if k in ["gpu","data_pth","split_pth","rating_level","model","save_pth","log_file","cp_pth",]:
 			continue
-		if k not in ["wrist_suf","lifelog_suf","env_list","save_annotation","result_anno"]:
+		if k not in ["wrist_suf","env_suf","env_list","save_annotation","result_anno"]:
 			continue
 		v = arg_dict[k]
 		if type(v) == float:
@@ -319,9 +319,9 @@ def train_eval(args,model="MUMR"):
 		set_all_seeds(all_seed)
 		i += 1
 		# construct dataset
-		train_dataset = MoodDataset(train_idx, act_window_size=args.act_window_size, bio_window_size=args.bio_window_size, data_pth=args.data_pth, env_list=args.env_list, wrist_suf=args.wrist_suf,lifelog_suf=args.lifelog_suf, rating_level=args.rating_level,
+		train_dataset = MoodDataset(train_idx, act_window_size=args.act_window_size, bio_window_size=args.bio_window_size, data_pth=args.data_pth, env_list=args.env_list, wrist_suf=args.wrist_suf,env_suf=args.env_suf, rating_level=args.rating_level,
 		mhide_users=args.mhide_users)
-		test_dataset = MoodDataset(test_idx, act_window_size=args.act_window_size, bio_window_size=args.bio_window_size, data_pth=args.data_pth, env_list=args.env_list, wrist_suf=args.wrist_suf,lifelog_suf=args.lifelog_suf, rating_level=args.rating_level,
+		test_dataset = MoodDataset(test_idx, act_window_size=args.act_window_size, bio_window_size=args.bio_window_size, data_pth=args.data_pth, env_list=args.env_list, wrist_suf=args.wrist_suf,env_suf=args.env_suf, rating_level=args.rating_level,
 		mhide_users=args.mhide_users )
 
 		# train and test
@@ -355,7 +355,7 @@ def run(args):
 	
 	result_pth = os.path.join(args.save_pth,model)
 	os.makedirs(result_pth,exist_ok=True)
-	result_file = os.path.join(result_pth,"um_only%s_%s_%s%s.csv"%(str(args.um_only),args.result_anno,args.wrist_suf,args.lifelog_suf))
+	result_file = os.path.join(result_pth,"um_only%s_%s_%s%s.csv"%(str(args.um_only),args.result_anno,args.wrist_suf,args.env_suf))
 	logger.info("Save results to file: %s"%(result_file))
 	result_exist = pd.DataFrame()
 	if os.path.exists(result_file):
