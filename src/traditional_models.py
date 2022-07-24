@@ -34,8 +34,8 @@ def add_argument(parser):
 	# Data loading
 	parser.add_argument("--data_pth",type=str,default="../Features_add4/DictData")
 	parser.add_argument("--split_pth",type=str,default="../Features_add4/split/")
-	parser.add_argument("--use_wrist",type=int,default=1)
-	parser.add_argument("--env_list",type=str,default="time,weather,GPS")
+	parser.add_argument("--use_wrist",type=int,default=1,help="Whether use wrist and enviroment context.")
+	parser.add_argument("--env_list",type=str,default="time,weather,GPS",help="What enviroment factors to use for encoding.")
 	parser.add_argument("--window",type=int,default=10)
 	parser.add_argument("--wrist_suf",type=str,default="",help="Wrist suffix for filename.")
 	parser.add_argument("--lifelog_suf",type=str,default="",help="Lifelog suffix for filename.")
@@ -44,7 +44,7 @@ def add_argument(parser):
 	parser.add_argument("--save_pth",type=str,default="../predict_results_add4/")
 	parser.add_argument("--log_file",type=str,default="./checkpoints/")
 	parser.add_argument("--checkpoint",type='bool',default='True')
-	parser.add_argument("--save_annotation",type=str,default="user,music")
+	parser.add_argument("--save_annotation",type=str,default="user,music",help="Annotation to add when saving model and logs.")
 
 	# Goal Selection
 	parser.add_argument("--model",type=str,default="GBRT",help="Model to train.")
@@ -57,6 +57,7 @@ def add_argument(parser):
 	return parser
 
 def r2s(r, rating_level):
+	# transfer rating to different scales
 	if rating_level==5:
 		return (r-1)/4
 	if rating_level==2:

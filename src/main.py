@@ -22,6 +22,7 @@ logger = logging.getLogger()
 INF = 100000000
 
 class MultiLoss(nn.Module):
+	# multi-task loss
 	def __init__(self,alpha,beta,gamma,):
 		super(MultiLoss,self).__init__()
 		self.alpha = alpha
@@ -33,19 +34,7 @@ class MultiLoss(nn.Module):
 	def forward(self, m1, m2, r, pred_m1, pred_m2, pred_r):
 		m1_loss = self.mse_loss(m1,pred_m1)
 		m2_loss = self.mse_loss(m2,pred_m2)
-		# print("m2:", m2)
-		# print("pred_m2: ",pred_m2)
-		# print("mse_loss: ",m2_loss)
 		loss = m1_loss*self.alpha + m2_loss*self.beta
-
-		# inputs = "loss"
-		# while inputs != 'continue':
-		# 	try:
-		# 		print(eval(inputs))
-		# 	except Exception as e:
-		# 		print(e)
-		# 	inputs = input()
-		
 		r_loss = self.mse_loss(r,pred_r)
 		loss += r_loss*self.gamma
 		return loss, r_loss,m1_loss,m2_loss
@@ -65,22 +54,21 @@ def str2bool(v):
 
 def add_argument(parser):
 	parser.register('type','bool',str2bool)
-	
 	# Data loading
 	parser.add_argument("--data_pth",type=str,default="../Features_add4/DictData")
 	parser.add_argument("--split_pth",type=str,default="../Features_add4/split/")
 	parser.add_argument("--wrist_suf",type=str,default="",help="Wrist suffix for filename.")
 	parser.add_argument("--env_suf",type=str,default="",help="Lifelog suffix for filename.")
-	parser.add_argument("--env_list",type=str,default="weather,GPS")
+	parser.add_argument("--env_list",type=str,default="time,weather,GPS",help="What enviroment factors to use for encoding.")
 	
 	# Goal Selection
-	parser.add_argument("--model",type=str,default="MUMR",help="Model to train.")
+	parser.add_argument("--model",type=str,default="MUMR",help="Which model to train, MUMR or WD.")
 	parser.add_argument("--train_type",type=str,default="LOO",help="Train type: LOO, LOSO, CV(for CV10), or CV5")
 	parser.add_argument("--rating_level",type=int,default=3,help="Rating level: 2,3,5")
-	parser.add_argument("--true_m1",type='bool',default='False')
-	parser.add_argument("--true_m2",type='bool',default='False')
-	parser.add_argument("--input_mood",type='bool',default='True')
-	parser.add_argument("--input_mood1",type='bool',default='True')
+	parser.add_argument("--true_m1",type='bool',default='False',help="Whether use the true labels of mood_pre for mood_post predictor.")
+	parser.add_argument("--true_m2",type='bool',default='False',help="Whether use the true labels of mood_post for rating predictor.")
+	parser.add_argument("--input_mood",type='bool',default='True',help="Whether predict rating with mood_post.")
+	parser.add_argument("--input_mood1",type='bool',default='True', help="Whether predict mood_post with mood_pre.")
 	parser.add_argument("--um_only",type='bool',default='False',help="Whether to use user and music information only.")
 
 	# Saving settings
@@ -92,8 +80,8 @@ def add_argument(parser):
 	parser.add_argument("--result_anno",type=str,default="user,music")
 
 	# Data parameters
-	parser.add_argument("--act_window_size",type=int,default=20)
-	parser.add_argument("--bio_window_size",type=int,default=0)
+	parser.add_argument("--act_window_size",type=int,default=20,help="Window size for activity.")
+	parser.add_argument("--bio_window_size",type=int,default=0,help="Window size for biological information.")
 
 	# Training settings
 	parser.add_argument("--gpu",type=int,default=0,help="gru id")
@@ -111,10 +99,10 @@ def add_argument(parser):
 	parser.add_argument("--mhide_users",type=str,default="") # list of users to hide mood information 
 	parser.add_argument("--embed_dim",type=int,default=16)
 	parser.add_argument("--hidden_dim",type=int,nargs="+",default=[256])
-	parser.add_argument("--a_hdim",type=int,default=8)
-	parser.add_argument("--b_hdim",type=int,default=8)
-	parser.add_argument("--t_hdim",type=int,default=2)
-	parser.add_argument("--e_hdim",type=int,default=4)
+	parser.add_argument("--a_hdim",type=int,default=8,help="activity embedding hidden dim.")
+	parser.add_argument("--b_hdim",type=int,default=8,help="biological info embedding hidden dim.")
+	parser.add_argument("--t_hdim",type=int,default=2,help="time embedding hidden dim.")
+	parser.add_argument("--e_hdim",type=int,default=4,help="environment embedding hidden dim.")
 	parser.add_argument("--kernel_size",type=int,default=5)
 	parser.add_argument("--stride",type=int,default=3)
 
@@ -149,7 +137,7 @@ def train(train_dataset,test_dataset,args,prefix="test"):
 		input_dim.append(example[k].shape)
 		print(k,example[k].shape)
 
-	# TODO
+	# define the model
 	if args.model == "WideDeep":
 		wide_dim = input_dim[0][1]+input_dim[1][1]
 		if args.um_only:
@@ -242,6 +230,7 @@ def evaluate(train_dataset, test_dataset, args,prefix="test"):
 	train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False, num_workers=1)
 	test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=1)  
 
+	# evaluate
 	results = []
 	net.eval()
 	choice_type = ["Test","Train"]
@@ -284,7 +273,6 @@ def evaluate(train_dataset, test_dataset, args,prefix="test"):
 		logger.info("%s set shape: %s"%(choice_type[l_choice],str(prediction_all.shape)))
 
 	return results
-
 
 
 def get_mainargs(args):
@@ -362,7 +350,6 @@ def run(args):
 		result_exist = pd.read_csv(result_file)
 	result_df = result_exist.append(result_df,ignore_index=True)
 	result_df.to_csv(result_file,index=False)
-
 
 
 if __name__ == "__main__":

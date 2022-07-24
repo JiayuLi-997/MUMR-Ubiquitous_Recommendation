@@ -15,7 +15,7 @@ class MoodDataset(Dataset):
     def __init__(self, exp_ids, act_window_size=10,bio_window_size=10, data_pth="../Features_add4/DictData/",
                     env_list="weather,GPS,time",wrist_suf="fill0",env_suf="",rating_level=5,
                     mhide_users=""):
-        # load saved data
+        # load the dataset
         self.user = json.load(open(os.path.join(data_pth,"user.json")))
         self.music = json.load(open(os.path.join(data_pth,"music_norm.json")))
         self.lifelog = json.load(open(os.path.join(data_pth,"env_%s.json"%(env_suf))))
@@ -39,6 +39,7 @@ class MoodDataset(Dataset):
             self.label[rec][0] = self.r2s(self.label[rec][0])
 
     def r2s(self, r):
+        # scale the ratings
         if self.rating_level==5:
             return (r-1)/4
         if self.rating_level==2:
