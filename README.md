@@ -6,7 +6,16 @@ These are the dataset and implementation for the paper:
 Please cite the paper if you use the datasets or codes.
 
 ```
-The citation is coming soon.
+@article{li2022towards,
+  title={Towards Ubiquitous Personalized Music Recommendation with Smart Bracelets},
+  author={Li, Jiayu and He, Zhiyu and Cui, Yumeng and Wang, Chenyang and Chen, Chong and Yu, Chun and Zhang, Min and Liu, Yiqun and Ma, Shaoping},
+  journal={Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies},
+  volume={6},
+  number={3},
+  pages={1--34},
+  year={2022},
+  publisher={ACM New York, NY, USA}
+}
 ```
 
 If you have any problem about this work or the dataset, please raise the issues or contact with Min Zhang at z-m@tsinghua.edu.cn.
